@@ -52,5 +52,5 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 ## Fonts Used
 
 Big Noodle Titling from Sentinel Type, designed by James Arboghast
-* [Free for personal use](http://www.dafont.com/joystix.font)
+* [Free for personal use](http://www.dafont.com/bignoodle-titling.font)
 
