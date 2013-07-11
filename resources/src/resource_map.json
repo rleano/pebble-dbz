@@ -1,0 +1,41 @@
+{
+    "media": [
+        {
+            "defName": "IMAGE_GOKU",
+            "type": "png",
+            "file": "images/goku-ssj.png"
+        },
+        {
+            "defName": "IMAGE_VEGETA",
+            "type": "png",
+            "file": "images/vegeta.png"
+        },
+        {
+            "defName": "IMAGE_GOHAN",
+            "type": "png",
+            "file": "images/gohan-ssj2.png"
+        },
+        {
+            "defName": "IMAGE_PICCOLO",
+            "type": "png",
+            "file": "images/piccolo.png"
+        },
+        {
+            "defName": "IMAGE_BACK",
+            "type": "png",
+            "file": "images/watchface-dbz-2.png"
+        },
+        {
+            "defName": "FONT_BIG_NOODLE_TITLING_55",
+            "type": "font",
+            "file": "fonts/big_noodle_titling.ttf"
+        },
+        {
+            "defName": "IMAGE_MENU_ICON",
+            "type": "png",
+            "file": "images/pebble-mini.png"
+        }
+    ],
+    "friendlyVersion": "VERSION",
+    "versionDefName": "APP_RESOURCES"
+}
