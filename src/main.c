@@ -19,8 +19,13 @@ static const int width = 144;
 TextLayer text_time_layer;
 GFont time_font;
 static char time_text[] = "00:00";
-static int current_image = 0;
 
+// Date attributes
+TextLayer text_date_layer;
+GFont date_font;
+static char date_text[] = "Xxx 00";
+
+static int current_image = 3;
 Layer background_layer;
 Layer front_layer;
 BmpContainer back;
@@ -70,6 +75,30 @@ void front_update_callback(Layer *me, GContext* ctx) {
 	graphics_draw_bitmap_in_rect(ctx, &bmp->bmp, destination);
 }
 
+void remove_initial_zero() {
+	if (!clock_is_24h_style() && (time_text[0] == '0')) {
+		memmove(time_text, &time_text[1], sizeof(time_text) - 1);
+	}
+}
+
+void update_time_simple() {
+	// section based on Simplicity by Pebble Team begins
+	PblTm currentTime;
+	get_time(&currentTime);
+	if(clock_is_24h_style()){
+		string_format_time(time_text, sizeof(time_text), "%H:%M", &currentTime);
+	} else {
+		string_format_time(time_text, sizeof(time_text), "%I:%M", &currentTime);
+	}
+	// section ends
+	
+	string_format_time(date_text, sizeof(date_text), "%b %e", &currentTime);
+	
+	// XXX: Warning
+	// DO NOT SET DATE OR TIME HERE USING text_layer_set_text!
+	// IT WILL CREATE AN INFINITE LOOP AND CRASH THE PEBBLE!
+}
+
 // Initializes all
 void handle_init(AppContextRef ctx) {
     (void)ctx;
@@ -87,30 +116,28 @@ void handle_init(AppContextRef ctx) {
 	
 	//ValidColors
 	// GColorBlack, GColorWhite, GColorClear
+
+	// Initializes Date Layer
+	date_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_JOYSTIX_18));
+	text_layer_init(&text_date_layer, GRect(width/2 - 55, height/2 - 35, 110, 20));
+	text_layer_set_text_color(&text_date_layer, GColorWhite);
+	text_layer_set_background_color(&text_date_layer, GColorClear);
+	text_layer_set_text_alignment(&text_date_layer, GTextAlignmentCenter);
+	text_layer_set_font(&text_date_layer, date_font);	
 	
 	// Initializes Time Layer
 	time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_BIG_NOODLE_TITLING_55));
-	text_layer_init(&text_time_layer, GRect(width/2 - 55, height/2 - 30, 110, 60));
+	text_layer_init(&text_time_layer, GRect(width/2 - 55, height/2 - 25, 110, 55));
 	text_layer_set_text_color(&text_time_layer, GColorWhite);
 	text_layer_set_background_color(&text_time_layer, GColorClear);
 	text_layer_set_text_alignment(&text_time_layer, GTextAlignmentCenter);
 	text_layer_set_font(&text_time_layer, time_font);
 	
 	// Set time
-	PblTm currentTime;
-	get_time(&currentTime);
-	if(clock_is_24h_style()){
-		string_format_time(time_text, sizeof(time_text), "%H:%M", &currentTime);
-	} else {
-		string_format_time(time_text, sizeof(time_text), "%I:%M", &currentTime);
-	}
-	// removes initial 0 in AM/PM mode
-	//if (!clock_is_24h_style() && (time_text[0] == '0')) {
-	//	memmove(time_text, &time_text[1], sizeof(time_text) - 1);
-	//}
+	update_time_simple();
 	
-	text_layer_set_text(&text_time_layer, time_text);
-	
+	// Sets texttime layer on top of window layer
+	layer_add_child(&background_layer, &text_date_layer.layer);
 	// Sets texttime layer on top of window layer
 	layer_add_child(&background_layer, &text_time_layer.layer);
 	
@@ -127,6 +154,7 @@ void handle_init(AppContextRef ctx) {
 	bmp_init_container(RESOURCE_ID_IMAGE_VEGETA, &vegeta);
 	
 	text_layer_set_text(&text_time_layer, time_text);
+	text_layer_set_text(&text_date_layer, date_text);
 }
 
 // Liberates resources
@@ -141,6 +169,7 @@ void handle_deinit(AppContextRef ctx) {
 	bmp_deinit_container(&vegeta);
 	
 	fonts_unload_custom_font(time_font);
+	fonts_unload_custom_font(date_font);
 }
 
 void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
@@ -148,24 +177,12 @@ void handle_minute_tick(AppContextRef ctx, PebbleTickEvent *t) {
 	(void)ctx;
 	
 	// Updates time
-	// section based on Simplicity by Pebble Team begins
-	PblTm currentTime;
-	get_time(&currentTime);
-	if(clock_is_24h_style()){
-		string_format_time(time_text, sizeof(time_text), "%H:%M", &currentTime);
-	} else {
-		string_format_time(time_text, sizeof(time_text), "%I:%M", &currentTime);
-	}
+	update_time_simple();
 	
 	current_image = (current_image + 1) % 4;
 	
-	// removes initial 0 in AM/PM mode
-	//if (!clock_is_24h_style() && (time_text[0] == '0')) {
-	//	memmove(time_text, &time_text[1], sizeof(time_text) - 1);
-	//}
-	// section ends
-	
 	text_layer_set_text(&text_time_layer, time_text);
+	text_layer_set_text(&text_date_layer, date_text);
 }
 
 
