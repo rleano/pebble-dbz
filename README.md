@@ -1,4 +1,7 @@
 # DBZ Pebble Watch Face
+
+This watchface is not yet updated for the latest version of the Pebble OS
+
 _by Rafa Leano_
 
 Watch face featuring characters from the _Dragon Ball Z_ Anime. The characters change every minute. Currently has images for:
